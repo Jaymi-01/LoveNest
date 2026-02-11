@@ -75,7 +75,7 @@ importers:
         specifier: ^8.0.9
         version: 8.0.9(expo@54.0.33)(react@19.1.0)
       expo-secure-store:
-        specifier: ^15.0.8
+        specifier: ~15.0.8
         version: 15.0.8(expo@54.0.33)
       expo-splash-screen:
         specifier: ~31.0.13
