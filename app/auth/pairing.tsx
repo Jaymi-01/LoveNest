@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Share } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Share, Image } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { db } from '../../lib/firebase';
 import { doc, updateDoc, setDoc, query, collection, where, getDocs, onSnapshot } from 'firebase/firestore';
@@ -73,7 +73,7 @@ export default function PairingScreen() {
   const shareCode = async () => {
     try {
       await Share.share({
-        message: `Join me on LoveNest! My pairing code is: ${myCode}`,
+        message: `Join me on Love Nest! My pairing code is: ${myCode}`,
       });
     } catch (error) {
       console.error(error);
@@ -90,8 +90,12 @@ export default function PairingScreen() {
   return (
     <View style={styles.container}>
       <GlassCard style={styles.card}>
-        <Heart color={Theme.colors.primary} size={48} style={{ alignSelf: 'center', marginBottom: 20 }} />
-        <Text style={styles.title}>Pair with Partner</Text>
+        <Image 
+          source={require('../../assets/images/logo-transparent.png')} 
+          style={{ width: 100, height: 100, alignSelf: 'center', marginBottom: 20 }}
+          resizeMode="contain"
+        />
+        <Text style={styles.title}>Pair Hearts</Text>
         
         <View style={styles.codeSection}>
           <Text style={styles.label}>Your Code</Text>

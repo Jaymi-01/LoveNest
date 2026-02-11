@@ -22,6 +22,8 @@ import { Alert } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
+import { Image } from 'react-native';
+
 export default function Dashboard() {
   const { user, nestData, loading } = useAuth();
   const router = useRouter();
@@ -35,9 +37,12 @@ export default function Dashboard() {
           colors={['transparent', Theme.colors.surface]}
           style={StyleSheet.absoluteFill}
         />
-        <Heart color={Theme.colors.primary} size={80} fill={Theme.colors.primary} style={styles.heroIcon} />
-        <Text style={styles.appName}>LoveNest</Text>
-        <Text style={styles.tagline}>Your private sanctuary for two</Text>
+        <Image 
+          source={require('../assets/images/logo-transparent.png')} 
+          style={{ width: 120, height: 120, marginBottom: 20 }}
+          resizeMode="contain"
+        />
+        <Text style={styles.appName}>Love Nest</Text>
         
         <TouchableOpacity 
           style={styles.primaryButton}
