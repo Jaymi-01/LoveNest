@@ -1,0 +1,60 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if the user is part of the specific Nest
+    function isPartner(nestId) {
+      return request.auth != null && 
+        (request.auth.uid in get(/databases/$(database)/documents/nests/$(nestId)).data.users);
+    }
+
+    // User Profiles
+    match /users/{userId} {
+      // Allow user to create their own profile during registration
+      allow create: if request.auth != null && request.auth.uid == userId;
+      // Allow user to read and update their own profile (e.g., setting nestId or pairingCode)
+      allow read, update: if request.auth != null && request.auth.uid == userId;
+      
+      // Allow any authenticated user to search for another user by pairingCode
+      // This is necessary for the handlePair function in pairing.tsx
+      allow list: if request.auth != null;
+    }
+
+    // Nest Data (Shared space for two)
+    match /nests/{nestId} {
+      allow read: if isPartner(nestId);
+      // Allow creation during pairing, allow updates only for partners
+      allow create: if request.auth != null;
+      allow update: if isPartner(nestId);
+
+      // Chat Messages (Feature 1, 2, 3)
+      match /messages/{messageId} {
+        allow read, write: if isPartner(nestId);
+      }
+
+      // Joint Calendar (Feature 4, 5)
+      match /events/{eventId} {
+        allow read, write: if isPartner(nestId);
+      }
+
+      // Digital Scrapbook (Feature 2, 6)
+      match /scrapbook/{photoId} {
+        allow read, write: if isPartner(nestId);
+      }
+
+      // Shared Notes / Journals (Feature 7)
+      match /journals/{journalId} {
+        allow read, write: if isPartner(nestId);
+      }
+
+      // Digital Love Letters (Feature 15)
+      match /love_letters/{letterId} {
+        allow read: if isPartner(nestId);
+        allow create: if isPartner(nestId);
+        // Note: Client-side logic prevents opening if date hasn't passed,
+        // but for true security, you could add: && (resource.data.unlockDate <= request.time || resource.data.senderId == request.auth.uid)
+        allow update, delete: if isPartner(nestId) && resource.data.senderId == request.auth.uid;
+      }
+    }
+  }
+}
