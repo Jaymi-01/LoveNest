@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import * as ScreenCapture from 'expo-screen-capture';
 import { 
   View, 
   Text, 
@@ -8,7 +9,8 @@ import {
   TouchableOpacity, 
   KeyboardAvoidingView, 
   Platform,
-  Image
+  Image,
+  TouchableWithoutFeedback
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { db, storage } from '../../lib/firebase';
@@ -46,6 +48,11 @@ export default function ChatScreen() {
   useEffect(() => {
     if (!nestData) return;
 
+    // Screenshot Notification
+    const subscription = ScreenCapture.addScreenshotListener(() => {
+      sendMessage('Captured a screenshot!', 'system');
+    });
+
     const q = query(
       collection(db, `nests/${nestData.id || 'temp'}/messages`),
       orderBy('createdAt', 'desc'),
@@ -61,22 +68,25 @@ export default function ChatScreen() {
       setMessages(msgs);
     });
 
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+      subscription.remove();
+    };
   }, [nestData]);
 
-  const sendMessage = async (textOverride?: string, type: 'text' | 'image' | 'ping' = 'text') => {
+  const sendMessage = async (textOverride?: string, type: 'text' | 'image' | 'ping' | 'system' = 'text') => {
     const textToSend = textOverride || message;
     if (!textToSend.trim() && type === 'text') return;
 
     try {
-      const encryptedText = type === 'text' ? encryptMessage(textToSend) : textToSend;
+      const encryptedText = (type === 'text' || type === 'system') ? encryptMessage(textToSend) : textToSend;
       
       await addDoc(collection(db, `nests/${nestData.id || 'temp'}/messages`), {
         text: encryptedText,
         senderId: user?.uid,
         createdAt: serverTimestamp(),
         type,
-        encrypted: type === 'text'
+        encrypted: (type === 'text' || type === 'system')
       });
 
       if (!textOverride) setMessage('');
@@ -106,11 +116,21 @@ export default function ChatScreen() {
   const renderMessage = ({ item }: { item: any }) => {
     const isMe = item.senderId === user?.uid;
     
+    if (item.type === 'system') {
+      return (
+        <View style={styles.systemMessage}>
+          <Text style={styles.systemMessageText}>{isMe ? 'You' : 'Partner'} {item.text}</Text>
+        </View>
+      );
+    }
+
     return (
       <View style={[styles.messageWrapper, isMe ? styles.myMessage : styles.theirMessage]}>
         <View style={[styles.messageBubble, isMe ? styles.myBubble : styles.theirBubble]}>
           {item.type === 'image' ? (
-            <Image source={{ uri: item.text }} style={styles.messageImage} />
+            <TouchableWithoutFeedback onLongPress={() => {}}>
+              <Image source={{ uri: item.text }} style={styles.messageImage} />
+            </TouchableWithoutFeedback>
           ) : item.type === 'ping' ? (
             <View style={styles.pingContainer}>
               <Heart color="#fff" fill="#fff" size={24} />
@@ -297,5 +317,18 @@ const styles = StyleSheet.create({
   },
   disabledSend: {
     backgroundColor: 'rgba(233, 78, 119, 0.4)',
+  },
+  systemMessage: {
+    alignSelf: 'center',
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginVertical: 10,
+  },
+  systemMessageText: {
+    color: 'rgba(255,255,255,0.4)',
+    fontSize: 12,
+    fontWeight: '600',
   }
 });

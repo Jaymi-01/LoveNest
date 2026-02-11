@@ -22,7 +22,11 @@ export default function RootLayout() {
                 backgroundColor: Theme.colors.background,
               },
             }}
-          />
+          >
+            <Stack.Screen name="auth/login" options={{ headerShown: false }} />
+            <Stack.Screen name="auth/pairing" options={{ headerShown: false }} />
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+          </Stack>
         </View>
       </AppLockWrapper>
     </AuthProvider>
