@@ -193,6 +193,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: Theme.colors.text,
     letterSpacing: -1,
+    marginBottom: 60,
   },
   tagline: {
     fontSize: 18,
