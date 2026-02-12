@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
-import { getItemAsync } from 'expo-secure-store';
+import { View, Text, StyleSheet, TouchableOpacity, Vibration, Platform } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Theme } from '../constants/Theme';
 import { GlassCard } from './GlassCard';
 import { Lock } from 'lucide-react-native';
@@ -19,8 +20,17 @@ export const PINLock: React.FC<PINLockProps> = ({ onUnlock }) => {
   }, []);
 
   const loadStoredPin = async () => {
-    const pin = await getItemAsync('app_pin');
-    setStoredPin(pin);
+    try {
+      let pin = null;
+      if (Platform.OS !== 'web') {
+        pin = await SecureStore.getItemAsync('app_pin');
+      } else {
+        pin = await AsyncStorage.getItem('app_pin');
+      }
+      setStoredPin(pin);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const handlePress = (num: string) => {

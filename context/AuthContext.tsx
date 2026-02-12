@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getItemAsync } from 'expo-secure-store';
+import { Platform } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth, db } from '../lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
@@ -20,22 +22,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLocked, setIsLocked] = useState(false);
   const [nestData, setNestData] = useState<any | null>(null);
 
+  const getStoredPin = async () => {
+    try {
+      if (Platform.OS !== 'web') {
+        return await SecureStore.getItemAsync('app_pin');
+      }
+      return await AsyncStorage.getItem('app_pin');
+    } catch (e) {
+      return null;
+    }
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       if (user) {
-        // Fetch nest data (pairing info)
+        // Fetch nest data
         const userDoc = await getDoc(doc(db, 'users', user.uid));
         if (userDoc.exists()) {
           const data = userDoc.data();
           if (data.nestId) {
             const nestDoc = await getDoc(doc(db, 'nests', data.nestId));
-            setNestData(nestDoc.exists() ? nestDoc.data() : null);
+            setNestData(nestDoc.exists() ? { id: nestDoc.id, ...nestDoc.data() } : null);
           }
         }
         
-        // Check if PIN is set - only lock if a PIN exists
-        const pin = await getItemAsync('app_pin');
+        // Check if PIN is set
+        const pin = await getStoredPin();
         if (pin) {
           setIsLocked(true);
         } else {
