@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { PINLock } from './PINLock';
 
 export const AppLockWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isLocked, setLocked, user } = useAuth();
+  const { isLocked, setLocked, user, getStoredPin } = useAuth();
   const lastInteraction = useRef(Date.now());
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -13,8 +13,11 @@ export const AppLockWrapper: React.FC<{ children: React.ReactNode }> = ({ childr
     if (timer.current) clearTimeout(timer.current);
     
     // 1 minute of inactivity
-    timer.current = setTimeout(() => {
-      if (user) setLocked(true);
+    timer.current = setTimeout(async () => {
+      if (user) {
+        const pin = await getStoredPin();
+        if (pin) setLocked(true);
+      }
     }, 60000);
   };
 

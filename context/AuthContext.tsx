@@ -12,6 +12,7 @@ interface AuthContextType {
   isLocked: boolean;
   setLocked: (locked: boolean) => void;
   nestData: any | null;
+  getStoredPin: () => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -69,7 +70,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, isLocked, setLocked: setIsLocked, nestData }}>
+    <AuthContext.Provider value={{ user, loading, isLocked, setLocked: setIsLocked, nestData, getStoredPin }}>
       {children}
     </AuthContext.Provider>
   );
