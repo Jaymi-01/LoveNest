@@ -102,8 +102,8 @@ export default function Dashboard() {
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>Hello, Beautiful</Text>
-            <Text style={styles.subGreeting}>Welcome back to your Nest</Text>
+            <Text style={styles.greeting}>Love Nest</Text>
+            <Text style={styles.subGreeting}>A sanctuary for two</Text>
           </View>
           <TouchableOpacity style={styles.settingsBtn}>
             <Settings color={Theme.colors.textSecondary} size={24} />
@@ -113,7 +113,7 @@ export default function Dashboard() {
         {/* Anniversary Hero */}
         <TouchableOpacity activeOpacity={0.9}>
           <LinearGradient
-            colors={['rgba(233, 78, 119, 0.4)', 'rgba(233, 78, 119, 0.1)']}
+            colors={['rgba(233, 78, 119, 0.2)', 'rgba(233, 78, 119, 0.05)']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.heroCard}
@@ -125,78 +125,41 @@ export default function Dashboard() {
               </Text>
             </View>
             <View style={styles.heroIconCircle}>
-              <Heart color="#fff" fill="#fff" size={32} />
+              <Heart color={Theme.colors.primary} fill={Theme.colors.primary} size={32} />
             </View>
           </LinearGradient>
         </TouchableOpacity>
 
-        {/* Mood & Status Row */}
+        {/* Mood & Status Section */}
+        <Text style={styles.sectionHeader}>Our Mood</Text>
         <View style={styles.statusRow}>
-          <GlassCard style={styles.moodMiniCard}>
-             <Smile color={Theme.colors.primary} size={24} />
-             <Text style={styles.miniLabel}>Mood Map</Text>
-          </GlassCard>
-          <GlassCard style={[styles.moodMiniCard, { borderColor: Theme.colors.accent }]}>
-             <Clock color={Theme.colors.accent} size={24} />
-             <Text style={styles.miniLabel}>Cooldown</Text>
-          </GlassCard>
+           <GlassCard style={styles.moodMiniCard} intensity={40}>
+              <View style={styles.moodPerson}>
+                <Text style={styles.personLabel}>You</Text>
+                <Smile color={Theme.colors.primary} size={32} />
+                <Text style={styles.moodStatus}>Sunny</Text>
+              </View>
+              <View style={styles.moodDivider} />
+              <View style={styles.moodPerson}>
+                <Text style={styles.personLabel}>Partner</Text>
+                <Smile color={Theme.colors.accent} size={32} />
+                <Text style={styles.moodStatus}>Cloudy</Text>
+              </View>
+           </GlassCard>
         </View>
 
-        {/* The Grid */}
-        <Text style={styles.sectionHeader}>Our Space</Text>
-        <View style={styles.grid}>
-          <FeatureIcon 
-            icon={<MessageSquare color="#fff" size={28} />} 
-            label="Chat" 
-            color="#E94E77" 
-            onPress={() => router.push('/chat')}
-          />
-          <FeatureIcon 
-            icon={<Calendar color="#fff" size={28} />} 
-            label="Calendar" 
-            color="#9B59B6" 
-            onPress={() => router.push('/calendar')}
-          />
-          <FeatureIcon 
-            icon={<Camera color="#fff" size={28} />} 
-            label="Scrapbook" 
-            color="#3498DB" 
-            onPress={() => router.push('/scrapbook')}
-          />
-          <FeatureIcon 
-            icon={<Book color="#fff" size={28} />} 
-            label="Journals" 
-            color="#F1C40F" 
-            onPress={() => router.push('/journals')}
-          />
-          <FeatureIcon 
-            icon={<Mail color="#fff" size={28} />} 
-            label="Letters" 
-            color="#E67E22" 
-            onPress={() => router.push('/love-letters')}
-          />
-          <FeatureIcon 
-            icon={<Lock color="#fff" size={28} />} 
-            label="Security" 
-            color="#607D8B" 
-            onPress={() => {}}
-          />
-        </View>
+        {/* Dynamic Alerts (Placeholder for Cooldown or Upcoming Reminders) */}
+        <GlassCard style={styles.alertCard} intensity={20}>
+          <Clock color={Theme.colors.accent} size={20} />
+          <Text style={styles.alertText}>No active cooldowns. Enjoy your day!</Text>
+        </GlassCard>
+
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-const FeatureIcon = ({ icon, label, color, onPress }: any) => (
-  <TouchableOpacity style={styles.gridItem} onPress={onPress}>
-    <GlassCard style={styles.gridCard} intensity={30}>
-      <View style={[styles.iconContainer, { backgroundColor: color }]}>
-        {icon}
-      </View>
-      <Text style={styles.gridLabel}>{label}</Text>
-    </GlassCard>
-  </TouchableOpacity>
-);
+// ... remove FeatureIcon and old grid styles ...
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: Theme.colors.background },
@@ -247,49 +210,53 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   moodMiniCard: {
-    width: (width - 50) / 2,
-    padding: 16,
+    width: '100%',
+    padding: 24,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    borderRadius: 32,
+  },
+  moodPerson: {
+    alignItems: 'center',
+  },
+  personLabel: {
+    color: 'rgba(255,255,255,0.4)',
+    fontSize: 12,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    marginBottom: 8,
+  },
+  moodStatus: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+    marginTop: 8,
+  },
+  moodDivider: {
+    width: 1,
+    height: 40,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+  },
+  alertCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 20,
+    padding: 20,
+    borderRadius: 24,
+    marginTop: 20,
   },
-  miniLabel: { color: '#fff', marginLeft: 12, fontWeight: '700', fontSize: 15 },
+  alertText: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: 14,
+    marginLeft: 12,
+    fontWeight: '500',
+  },
   sectionHeader: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '800',
     color: '#fff',
-    marginBottom: 20,
+    marginBottom: 16,
     marginLeft: 4,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  gridItem: {
-    width: (width - 60) / 3,
-    marginBottom: 20,
-  },
-  gridCard: {
-    padding: 16,
-    alignItems: 'center',
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
-  },
-  iconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 12,
-    ...Theme.shadow,
-  },
-  gridLabel: {
-    color: 'rgba(255,255,255,0.8)',
-    fontSize: 13,
-    fontWeight: '700',
   },
   authContainer: {
     flex: 1,
