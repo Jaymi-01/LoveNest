@@ -9,9 +9,9 @@ import {
   Image,
   SafeAreaView
 } from 'react-native';
-import { useAuth } from '../context/AuthContext';
-import { Theme } from '../constants/Theme';
-import { GlassCard } from '../components/GlassCard';
+import { useAuth } from './../../context/AuthContext';
+import { Theme } from './../../constants/Theme';
+import { GlassCard } from './../../components/GlassCard';
 import { 
   MessageSquare, 
   Calendar, 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
-import { Theme } from '../../constants/Theme';
-import { GlassCard } from '../../components/GlassCard';
+import { Theme } from './../../constants/Theme';
+import { GlassCard } from './../../components/GlassCard';
 import { Camera, Book, Mail, ChevronRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
