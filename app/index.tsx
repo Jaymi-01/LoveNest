@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  ScrollView, 
+  TouchableOpacity, 
+  Dimensions, 
+  Image,
+  SafeAreaView
+} from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { Theme } from '../constants/Theme';
 import { GlassCard } from '../components/GlassCard';
 import { 
-  Heart, 
   MessageSquare, 
   Calendar, 
   Camera, 
@@ -13,16 +21,16 @@ import {
   Clock, 
   Lock,
   Zap,
-  Mail
+  Mail,
+  Heart,
+  ChevronRight,
+  Settings
 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
-import { formatDistanceToNow, differenceInDays } from 'date-fns';
+import { differenceInDays } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Alert } from 'react-native';
 
 const { width } = Dimensions.get('window');
-
-import { Image } from 'react-native';
 
 export default function Dashboard() {
   const { user, nestData, loading } = useAuth();
@@ -34,38 +42,49 @@ export default function Dashboard() {
     return (
       <View style={styles.authContainer}>
         <LinearGradient
-          colors={['transparent', Theme.colors.surface]}
+          colors={[Theme.colors.background, '#1a0505']}
           style={StyleSheet.absoluteFill}
         />
-        <Image 
-          source={require('../assets/images/logo-transparent.png')} 
-          style={{ width: 120, height: 120, marginBottom: 20 }}
-          resizeMode="contain"
-        />
-        <Text style={styles.appName}>Love Nest</Text>
+        <View style={styles.onboardingHeader}>
+           <Image 
+            source={require('../assets/images/logo-transparent.png')} 
+            style={styles.heroLogo}
+            resizeMode="contain"
+          />
+          <Text style={styles.appName}>Love Nest</Text>
+        </View>
         
-        <TouchableOpacity 
-          style={styles.primaryButton}
-          onPress={() => router.push('/auth/login')}
-        >
-          <Text style={styles.buttonText}>Get Started</Text>
-        </TouchableOpacity>
+        <View style={styles.bottomArea}>
+          <TouchableOpacity 
+            style={styles.primaryButton}
+            onPress={() => router.push('/auth/login')}
+          >
+            <Text style={styles.buttonText}>Get Started</Text>
+            <ChevronRight color="#fff" size={20} />
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
 
   if (!nestData) {
     return (
-      <View style={styles.container}>
-        <GlassCard style={styles.pairingCard}>
-          <Zap color={Theme.colors.primary} size={40} />
-          <Text style={styles.cardTitle}>Waiting for your partner...</Text>
-          <Text style={styles.cardSubtitle}>Share your code or enter theirs to begin your journey together.</Text>
+      <View style={styles.pairingContainer}>
+        <LinearGradient
+          colors={[Theme.colors.background, '#2d0a0a']}
+          style={StyleSheet.absoluteFill}
+        />
+        <GlassCard style={styles.pairingCard} intensity={60}>
+          <Zap color={Theme.colors.primary} size={48} style={{ marginBottom: 20 }} />
+          <Text style={styles.cardTitle}>Finding your partner...</Text>
+          <Text style={styles.cardSubtitle}>
+            Your Nest is almost ready. Once your partner enters your code, we'll whisk you away to your private space.
+          </Text>
           <TouchableOpacity 
-            style={styles.secondaryButton}
+            style={styles.pairingButton}
             onPress={() => router.push('/auth/pairing')}
           >
-            <Text style={styles.buttonText}>Pairing Settings</Text>
+            <Text style={styles.buttonText}>Open Pairing Settings</Text>
           </TouchableOpacity>
         </GlassCard>
       </View>
@@ -73,271 +92,241 @@ export default function Dashboard() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Anniversary Countdown */}
-      <GlassCard style={styles.anniversaryCard}>
-        <View style={styles.row}>
-          <Heart color={Theme.colors.primary} fill={Theme.colors.primary} size={24} />
-          <Text style={styles.anniversaryTitle}>Days Together</Text>
-        </View>
-        <Text style={styles.daysCount}>
-          {differenceInDays(new Date(), new Date(nestData.anniversaryDate || Date.now()))}
-        </Text>
-        <Text style={styles.countdownSub}>Next anniversary in 42 days</Text>
-      </GlassCard>
-
-      {/* Quick Actions */}
-      <View style={styles.grid}>
-        <MenuButton 
-          icon={<MessageSquare color="#fff" />} 
-          label="Chat" 
-          onPress={() => router.push('/chat')} 
-          color="#E94E77"
-        />
-        <MenuButton 
-          icon={<Calendar color="#fff" />} 
-          label="Calendar" 
-          onPress={() => router.push('/calendar')} 
-          color="#9B59B6"
-        />
-        <MenuButton 
-          icon={<Camera color="#fff" />} 
-          label="Scrapbook" 
-          onPress={() => router.push('/scrapbook')} 
-          color="#3498DB"
-        />
-        <MenuButton 
-          icon={<Book color="#fff" />} 
-          label="Journals" 
-          onPress={() => router.push('/journals')} 
-          color="#F1C40F"
-        />
-        <MenuButton 
-          icon={<Mail color="#fff" />} 
-          label="Love Letters" 
-          onPress={() => router.push('/love-letters')} 
-          color="#E67E22"
-        />
-        <MenuButton 
-          icon={<Lock color="#fff" />} 
-          label="Security" 
-          onPress={() => Alert.alert("Security Settings", "PIN and Autolock are enabled.")} 
-          color="#95A5A6"
-        />
-      </View>
-
-      {/* Mood Map */}
-      <GlassCard style={styles.moodCard}>
-        <Text style={styles.sectionTitle}>Mood Map</Text>
-        <View style={styles.moodRow}>
-          <View style={styles.moodItem}>
-            <Text style={styles.moodLabel}>You</Text>
-            <Smile color={Theme.colors.accent} size={40} />
-            <Text style={styles.moodStatus}>Sunny</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <LinearGradient
+        colors={[Theme.colors.background, '#1a0505', Theme.colors.background]}
+        style={StyleSheet.absoluteFill}
+      />
+      
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.greeting}>Hello, Beautiful</Text>
+            <Text style={styles.subGreeting}>Welcome back to your Nest</Text>
           </View>
-          <View style={styles.moodDivider} />
-          <View style={styles.moodItem}>
-            <Text style={styles.moodLabel}>Partner</Text>
-            <Smile color={Theme.colors.primary} size={40} />
-            <Text style={styles.moodStatus}>Cloudy</Text>
-          </View>
+          <TouchableOpacity style={styles.settingsBtn}>
+            <Settings color={Theme.colors.textSecondary} size={24} />
+          </TouchableOpacity>
         </View>
-      </GlassCard>
 
-      {/* Cooldown Timer (Simulated) */}
-      <GlassCard style={styles.cooldownCard}>
-        <View style={styles.row}>
-          <Clock color={Theme.colors.accent} size={20} />
-          <Text style={styles.cooldownTitle}>Cooldown Active</Text>
+        {/* Anniversary Hero */}
+        <TouchableOpacity activeOpacity={0.9}>
+          <LinearGradient
+            colors={['rgba(233, 78, 119, 0.4)', 'rgba(233, 78, 119, 0.1)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.heroCard}
+          >
+            <View style={styles.heroInfo}>
+              <Text style={styles.heroLabel}>Days Together</Text>
+              <Text style={styles.heroValue}>
+                {differenceInDays(new Date(), new Date(nestData.anniversaryDate || Date.now()))}
+              </Text>
+            </View>
+            <View style={styles.heroIconCircle}>
+              <Heart color="#fff" fill="#fff" size={32} />
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
+
+        {/* Mood & Status Row */}
+        <View style={styles.statusRow}>
+          <GlassCard style={styles.moodMiniCard}>
+             <Smile color={Theme.colors.primary} size={24} />
+             <Text style={styles.miniLabel}>Mood Map</Text>
+          </GlassCard>
+          <GlassCard style={[styles.moodMiniCard, { borderColor: Theme.colors.accent }]}>
+             <Clock color={Theme.colors.accent} size={24} />
+             <Text style={styles.miniLabel}>Cooldown</Text>
+          </GlassCard>
         </View>
-        <Text style={styles.timer}>12:45</Text>
-        <Text style={styles.cooldownSub}>Take a deep breath...</Text>
-      </GlassCard>
-    </ScrollView>
+
+        {/* The Grid */}
+        <Text style={styles.sectionHeader}>Our Space</Text>
+        <View style={styles.grid}>
+          <FeatureIcon 
+            icon={<MessageSquare color="#fff" size={28} />} 
+            label="Chat" 
+            color="#E94E77" 
+            onPress={() => router.push('/chat')}
+          />
+          <FeatureIcon 
+            icon={<Calendar color="#fff" size={28} />} 
+            label="Calendar" 
+            color="#9B59B6" 
+            onPress={() => router.push('/calendar')}
+          />
+          <FeatureIcon 
+            icon={<Camera color="#fff" size={28} />} 
+            label="Scrapbook" 
+            color="#3498DB" 
+            onPress={() => router.push('/scrapbook')}
+          />
+          <FeatureIcon 
+            icon={<Book color="#fff" size={28} />} 
+            label="Journals" 
+            color="#F1C40F" 
+            onPress={() => router.push('/journals')}
+          />
+          <FeatureIcon 
+            icon={<Mail color="#fff" size={28} />} 
+            label="Letters" 
+            color="#E67E22" 
+            onPress={() => router.push('/love-letters')}
+          />
+          <FeatureIcon 
+            icon={<Lock color="#fff" size={28} />} 
+            label="Security" 
+            color="#607D8B" 
+            onPress={() => {}}
+          />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
-const MenuButton = ({ icon, label, onPress, color }: any) => (
-  <TouchableOpacity style={styles.menuItem} onPress={onPress}>
-    <View style={[styles.iconBox, { backgroundColor: color }]}>
-      {icon}
-    </View>
-    <Text style={styles.menuLabel}>{label}</Text>
+const FeatureIcon = ({ icon, label, color, onPress }: any) => (
+  <TouchableOpacity style={styles.gridItem} onPress={onPress}>
+    <GlassCard style={styles.gridCard} intensity={30}>
+      <View style={[styles.iconContainer, { backgroundColor: color }]}>
+        {icon}
+      </View>
+      <Text style={styles.gridLabel}>{label}</Text>
+    </GlassCard>
   </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Theme.colors.background,
+  safeArea: { flex: 1, backgroundColor: Theme.colors.background },
+  container: { flex: 1 },
+  content: { padding: 20, paddingBottom: 40 },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 30,
+    marginTop: 10,
   },
-  content: {
-    padding: 20,
-    paddingTop: 60,
-  },
-  authContainer: {
-    flex: 1,
+  greeting: { fontSize: 28, fontWeight: '800', color: '#fff' },
+  subGreeting: { fontSize: 16, color: 'rgba(255,255,255,0.5)', marginTop: 4 },
+  settingsBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.05)',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Theme.colors.background,
-    padding: 40,
   },
-  heroIcon: {
-    marginBottom: 20,
-    shadowColor: Theme.colors.primary,
-    shadowRadius: 20,
-    shadowOpacity: 0.5,
-  },
-  appName: {
-    fontSize: 48,
-    fontWeight: '800',
-    color: Theme.colors.text,
-    letterSpacing: -1,
-    marginBottom: 60,
-  },
-  tagline: {
-    fontSize: 18,
-    color: Theme.colors.textSecondary,
-    marginBottom: 40,
-    textAlign: 'center',
-  },
-  primaryButton: {
-    backgroundColor: Theme.colors.primary,
-    paddingVertical: 16,
-    paddingHorizontal: 40,
-    borderRadius: 30,
-    width: '100%',
+  heroCard: {
+    height: 160,
+    borderRadius: 32,
+    padding: 24,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    ...Theme.shadow,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(233, 78, 119, 0.3)',
   },
-  secondaryButton: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
+  heroInfo: { flex: 1 },
+  heroLabel: { color: 'rgba(255,255,255,0.8)', fontSize: 16, fontWeight: '600' },
+  heroValue: { color: '#fff', fontSize: 56, fontWeight: '900', marginTop: 4 },
+  heroIconCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  statusRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 30,
+  },
+  moodMiniCard: {
+    width: (width - 50) / 2,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
     borderRadius: 20,
-    marginTop: 20,
   },
-  buttonText: {
+  miniLabel: { color: '#fff', marginLeft: 12, fontWeight: '700', fontSize: 15 },
+  sectionHeader: {
+    fontSize: 20,
+    fontWeight: '800',
     color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  anniversaryCard: {
     marginBottom: 20,
-    alignItems: 'center',
-  },
-  anniversaryTitle: {
-    color: Theme.colors.text,
-    fontSize: 18,
-    marginLeft: 10,
-    fontWeight: '600',
-  },
-  daysCount: {
-    fontSize: 72,
-    fontWeight: '900',
-    color: Theme.colors.primary,
-    marginVertical: 10,
-  },
-  countdownSub: {
-    color: Theme.colors.textSecondary,
-    fontSize: 14,
+    marginLeft: 4,
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+  },
+  gridItem: {
+    width: (width - 60) / 3,
     marginBottom: 20,
   },
-  menuItem: {
-    width: (width - 60) / 2,
-    backgroundColor: Theme.colors.surface,
-    padding: 20,
-    borderRadius: 24,
+  gridCard: {
+    padding: 16,
     alignItems: 'center',
-    marginBottom: 20,
+    borderRadius: 24,
     borderWidth: 1,
-    borderColor: Theme.colors.border,
+    borderColor: 'rgba(255,255,255,0.05)',
   },
-  iconBox: {
+  iconContainer: {
     width: 50,
     height: 50,
-    borderRadius: 15,
+    borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 12,
+    ...Theme.shadow,
   },
-  menuLabel: {
-    color: Theme.colors.text,
-    fontWeight: '600',
-  },
-  moodCard: {
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    color: Theme.colors.text,
-    fontSize: 18,
+  gridLabel: {
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 13,
     fontWeight: '700',
-    marginBottom: 20,
   },
-  moodRow: {
+  authContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  onboardingHeader: { alignItems: 'center', flex: 1, justifyContent: 'center' },
+  heroLogo: { width: 180, height: 180, marginBottom: 24 },
+  appName: { fontSize: 42, fontWeight: '900', color: '#fff', letterSpacing: -1 },
+  bottomArea: { width: '100%', paddingBottom: 40 },
+  primaryButton: {
+    backgroundColor: Theme.colors.primary,
+    height: 64,
+    borderRadius: 20,
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
     alignItems: 'center',
+    ...Theme.shadow,
   },
-  moodItem: {
-    alignItems: 'center',
-  },
-  moodLabel: {
-    color: Theme.colors.textSecondary,
-    fontSize: 12,
-    marginBottom: 8,
-  },
-  moodStatus: {
-    color: Theme.colors.text,
-    marginTop: 8,
-    fontWeight: '500',
-  },
-  moodDivider: {
-    width: 1,
-    height: 40,
-    backgroundColor: Theme.colors.border,
-  },
-  cooldownCard: {
-    borderWidth: 1,
-    borderColor: Theme.colors.accent,
-  },
-  cooldownTitle: {
-    color: Theme.colors.accent,
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 10,
-  },
-  timer: {
-    fontSize: 32,
-    color: Theme.colors.text,
-    fontWeight: '800',
-    marginVertical: 5,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  pairingCard: {
-    marginTop: 100,
-    alignItems: 'center',
-    textAlign: 'center',
-  },
-  cardTitle: {
-    fontSize: 20,
-    color: Theme.colors.text,
-    fontWeight: '700',
-    marginTop: 20,
-    marginBottom: 10,
-  },
+  buttonText: { color: '#fff', fontSize: 18, fontWeight: '800', marginRight: 10 },
+  pairingContainer: { flex: 1, justifyContent: 'center', padding: 24 },
+  pairingCard: { padding: 32, alignItems: 'center' },
+  cardTitle: { fontSize: 24, fontWeight: '800', color: '#fff', marginBottom: 12 },
   cardSubtitle: {
-    fontSize: 14,
-    color: Theme.colors.textSecondary,
+    fontSize: 16,
+    color: 'rgba(255,255,255,0.6)',
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 24,
+    marginBottom: 32,
+  },
+  pairingButton: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 16,
+    width: '100%',
+    alignItems: 'center',
   }
 });
