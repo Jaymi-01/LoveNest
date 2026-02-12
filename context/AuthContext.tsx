@@ -43,7 +43,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const data = userDoc.data();
           if (data.nestId) {
             const nestDoc = await getDoc(doc(db, 'nests', data.nestId));
-            setNestData(nestDoc.exists() ? { id: nestDoc.id, ...nestDoc.data() } : null);
+            if (nestDoc.exists()) {
+              setNestData({ id: nestDoc.id, ...nestDoc.data() });
+            } else {
+              setNestData(null);
+            }
           }
         }
         
