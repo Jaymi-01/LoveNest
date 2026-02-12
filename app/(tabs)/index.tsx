@@ -47,7 +47,7 @@ export default function Dashboard() {
         />
         <View style={styles.onboardingHeader}>
            <Image 
-            source={require('../assets/images/logo-transparent.png')} 
+            source={require('../../assets/images/logo-transparent.png')} 
             style={styles.heroLogo}
             resizeMode="contain"
           />
