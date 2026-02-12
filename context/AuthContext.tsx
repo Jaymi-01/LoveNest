@@ -4,7 +4,7 @@ import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth, db } from '../lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 
 interface AuthContextType {
   user: User | null;
@@ -35,38 +35,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    let userUnsubscribe: () => void = () => {};
+    let nestUnsubscribe: () => void = () => {};
+
+    const authUnsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
+      
       if (user) {
-        // Fetch nest data
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-        if (userDoc.exists()) {
-          const data = userDoc.data();
-          if (data.nestId) {
-            const nestDoc = await getDoc(doc(db, 'nests', data.nestId));
-            if (nestDoc.exists()) {
-              setNestData({ id: nestDoc.id, ...nestDoc.data() });
+        // Real-time listener for the USER document to detect pairing (nestId)
+        userUnsubscribe = onSnapshot(doc(db, 'users', user.uid), async (userSnap) => {
+          if (userSnap.exists()) {
+            const userData = userSnap.data();
+            
+            if (userData.nestId) {
+              // Real-time listener for the NEST document
+              nestUnsubscribe = onSnapshot(doc(db, 'nests', userData.nestId), (nestSnap) => {
+                if (nestSnap.exists()) {
+                  setNestData({ id: nestSnap.id, ...nestSnap.data() });
+                }
+              });
             } else {
               setNestData(null);
             }
           }
-        }
-        
-        // Check if PIN is set
-        const pin = await getStoredPin();
-        if (pin) {
-          setIsLocked(true);
-        } else {
-          setIsLocked(false);
-        }
+          
+          // Check PIN
+          const pin = await getStoredPin();
+          setIsLocked(!!pin);
+          setLoading(false);
+        });
       } else {
         setNestData(null);
         setIsLocked(false);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
-    return unsubscribe;
+    return () => {
+      authUnsubscribe();
+      userUnsubscribe();
+      nestUnsubscribe();
+    };
   }, []);
 
   return (
