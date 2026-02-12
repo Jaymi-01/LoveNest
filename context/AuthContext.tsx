@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import * as SecureStore from 'expo-secure-store';
+import { getItemAsync } from 'expo-secure-store';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth, db } from '../lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
@@ -35,7 +35,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         
         // Check if PIN is set - only lock if a PIN exists
-        const pin = await SecureStore.getItemAsync('app_pin');
+        const pin = await getItemAsync('app_pin');
         if (pin) {
           setIsLocked(true);
         } else {
