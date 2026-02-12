@@ -34,10 +34,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         }
         
-        // Check if PIN is set
+        // Check if PIN is set - only lock if a PIN exists
         const pin = await SecureStore.getItemAsync('app_pin');
         if (pin) {
           setIsLocked(true);
+        } else {
+          setIsLocked(false);
         }
       } else {
         setNestData(null);
