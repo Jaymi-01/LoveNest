@@ -1,27 +1,27 @@
 export const Colors = {
-  background: '#0F0505', // Blackberry Jam
-  surface: 'rgba(45, 10, 10, 0.4)', // Translucent Deep Burgundy
-  primary: '#E94E77', // Muted Raspberry
-  accent: '#FFB7C5', // Pale Rose (Soft Glow)
-  text: '#FFFFFF',
-  textSecondary: '#FFB7C5',
-  border: 'rgba(233, 78, 119, 0.2)',
+  background: '#FFF9F5', // Soft Peach Cream
+  surface: '#FFFFFF',
+  primary: '#F08080', // Soft Coral (Warm & Alive)
+  accent: '#FFD1B3', // Muted Apricot
+  text: '#5D4037', // Warm Cocoa Brown
+  textSecondary: '#A1887F', // Soft Clay
+  border: 'rgba(240, 128, 128, 0.2)',
 };
 
 export const Theme = {
   colors: Colors,
   glass: {
-    backgroundColor: Colors.surface,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: 'rgba(240, 128, 128, 0.1)',
     overflow: 'hidden' as const,
   },
   shadow: {
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 15,
-    elevation: 10,
+    shadowColor: '#F08080',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 8,
   },
 };

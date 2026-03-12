@@ -19,6 +19,7 @@ import { GlassCard } from '../../components/GlassCard';
 import { useRouter } from 'expo-router';
 import { Mail, Lock, Heart, ChevronRight } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { scale, verticalScale, moderateScale, fontScale } from '../../lib/responsive';
 
 const { height } = Dimensions.get('window');
 
@@ -60,7 +61,7 @@ export default function LoginScreen() {
       style={styles.container}
     >
       <LinearGradient
-        colors={[Theme.colors.background, '#1a0808', Theme.colors.background]}
+        colors={[Theme.colors.background, '#FFEDE0', Theme.colors.background]}
         style={StyleSheet.absoluteFill}
       />
       
@@ -68,26 +69,22 @@ export default function LoginScreen() {
         <View style={styles.headerArea}>
           <Image 
             source={require('../../assets/images/logo-transparent.png')} 
-            style={{ width: 120, height: 120, marginBottom: 16 }}
+            style={{ width: 140, height: 140, marginBottom: 16 }}
             resizeMode="contain"
           />
-          <Text style={styles.title}>Love Nest</Text>
           <Text style={styles.subtitle}>
             {isRegister ? 'Start your journey together' : 'Welcome back'}
           </Text>
         </View>
 
-        <GlassCard style={styles.card} intensity={60}>
-          <Text style={styles.formTitle}>{isRegister ? 'Sign Up' : 'Login'}</Text>
-          
+        <View style={styles.formArea}>
           <View style={styles.inputWrapper}>
-            <Text style={styles.inputLabel}>Email Address</Text>
             <View style={styles.inputContainer}>
-              <Mail color={Theme.colors.primary} size={18} style={styles.inputIcon} />
+              <Mail color={Theme.colors.primary} size={20} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="you@example.com"
-                placeholderTextColor="rgba(255,255,255,0.3)"
+                placeholder="Email Address"
+                placeholderTextColor="rgba(93, 64, 55, 0.4)"
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
@@ -97,13 +94,12 @@ export default function LoginScreen() {
           </View>
 
           <View style={styles.inputWrapper}>
-            <Text style={styles.inputLabel}>Password</Text>
             <View style={styles.inputContainer}>
-              <Lock color={Theme.colors.primary} size={18} style={styles.inputIcon} />
+              <Lock color={Theme.colors.primary} size={20} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="••••••••"
-                placeholderTextColor="rgba(255,255,255,0.3)"
+                placeholder="Password"
+                placeholderTextColor="rgba(93, 64, 55, 0.4)"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
@@ -133,7 +129,7 @@ export default function LoginScreen() {
               </Text>
             </Text>
           </TouchableOpacity>
-        </GlassCard>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
@@ -147,84 +143,87 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     justifyContent: 'center',
-    padding: 24,
+    padding: moderateScale(24),
   },
   headerArea: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: verticalScale(40),
   },
   logoCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: scale(80),
+    height: scale(80),
+    borderRadius: scale(40),
     backgroundColor: 'rgba(233, 78, 119, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: verticalScale(16),
     borderWidth: 1,
     borderColor: 'rgba(233, 78, 119, 0.2)',
   },
   title: {
-    fontSize: 32,
+    fontSize: fontScale(32),
     fontWeight: '800',
     color: '#fff',
     letterSpacing: -0.5,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: fontScale(16),
     color: Theme.colors.textSecondary,
-    marginTop: 8,
+    marginTop: verticalScale(8),
     textAlign: 'center',
     opacity: 0.8,
   },
+  formArea: {
+    width: '100%',
+  },
   card: {
-    padding: 24,
-    borderRadius: 32,
+    padding: moderateScale(24),
+    borderRadius: moderateScale(32),
   },
   formTitle: {
-    fontSize: 22,
+    fontSize: fontScale(22),
     fontWeight: '700',
     color: '#fff',
-    marginBottom: 24,
+    marginBottom: verticalScale(24),
   },
   inputWrapper: {
-    marginBottom: 20,
+    marginBottom: verticalScale(20),
   },
   inputLabel: {
     color: 'rgba(255,255,255,0.6)',
-    fontSize: 12,
+    fontSize: fontScale(12),
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 1,
-    marginBottom: 8,
-    marginLeft: 4,
+    marginBottom: verticalScale(8),
+    marginLeft: scale(4),
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.03)',
-    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: moderateScale(16),
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
-    paddingHorizontal: 16,
-    height: 56,
+    borderColor: 'rgba(240, 128, 128, 0.15)',
+    paddingHorizontal: scale(16),
+    height: verticalScale(56),
   },
   inputIcon: {
-    marginRight: 12,
+    marginRight: scale(12),
   },
   input: {
     flex: 1,
-    color: '#fff',
-    fontSize: 16,
+    color: Theme.colors.text,
+    fontSize: fontScale(16),
   },
   button: {
     backgroundColor: Theme.colors.primary,
-    height: 56,
-    borderRadius: 16,
+    height: verticalScale(56),
+    borderRadius: moderateScale(16),
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 12,
+    marginTop: verticalScale(12),
     ...Theme.shadow,
   },
   buttonDisabled: {
@@ -232,17 +231,17 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: 17,
+    fontSize: fontScale(17),
     fontWeight: '700',
-    marginRight: 8,
+    marginRight: scale(8),
   },
   toggleContainer: {
-    marginTop: 24,
+    marginTop: verticalScale(24),
     alignItems: 'center',
   },
   toggleText: {
     color: 'rgba(255,255,255,0.5)',
-    fontSize: 14,
+    fontSize: fontScale(14),
   },
   toggleAction: {
     color: Theme.colors.primary,
