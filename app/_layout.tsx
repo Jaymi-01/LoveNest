@@ -10,9 +10,10 @@ export default function RootLayout() {
     <AuthProvider>
       <AppLockWrapper>
         <View style={{ flex: 1, backgroundColor: Theme.colors.background }}>
-          <StatusBar style="light" />
+          <StatusBar style="dark" />
           <Stack
             screenOptions={{
+              headerShown: false,
               headerStyle: {
                 backgroundColor: Theme.colors.background,
               },
@@ -23,9 +24,9 @@ export default function RootLayout() {
               },
             }}
           >
-            <Stack.Screen name="auth/login" options={{ headerShown: false }} />
-            <Stack.Screen name="auth/pairing" options={{ headerShown: false }} />
-            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="auth/login" />
+            <Stack.Screen name="auth/pairing" />
+            <Stack.Screen name="(tabs)" />
           </Stack>
         </View>
       </AppLockWrapper>
