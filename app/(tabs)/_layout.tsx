@@ -3,17 +3,20 @@ import { BlurView } from 'expo-blur';
 import { StyleSheet, Platform } from 'react-native';
 import { Theme } from '../../constants/Theme';
 import { Home, MessageCircle, Heart, Calendar } from 'lucide-react-native';
+import { useAuth } from '../../context/AuthContext';
 
 export default function TabLayout() {
+  const { user, nestData } = useAuth();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarStyle: styles.tabBar,
+        tabBarStyle: (!user || !nestData) ? { display: 'none' } : styles.tabBar,
         tabBarActiveTintColor: Theme.colors.primary,
-        tabBarInactiveTintColor: 'rgba(255,255,255,0.4)',
+        tabBarInactiveTintColor: 'rgba(74, 69, 64, 0.3)',
         tabBarBackground: () => (
-          <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} />
+          <BlurView intensity={80} tint="light" style={StyleSheet.absoluteFill} />
         ),
       }}
     >
