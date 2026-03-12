@@ -11,6 +11,7 @@ interface AuthContextType {
   loading: boolean;
   isLocked: boolean;
   setLocked: (locked: boolean) => void;
+  userData: any | null;
   nestData: any | null;
   getStoredPin: () => Promise<string | null>;
 }
@@ -21,6 +22,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isLocked, setIsLocked] = useState(false);
+  const [userData, setUserData] = useState<any | null>(null);
   const [nestData, setNestData] = useState<any | null>(null);
 
   const getStoredPin = async () => {
@@ -34,52 +36,65 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // 1. Auth State
   useEffect(() => {
-    let userUnsubscribe: () => void = () => {};
-    let nestUnsubscribe: () => void = () => {};
-
-    const authUnsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
-      
-      if (user) {
-        // Real-time listener for the USER document to detect pairing (nestId)
-        userUnsubscribe = onSnapshot(doc(db, 'users', user.uid), async (userSnap) => {
-          if (userSnap.exists()) {
-            const userData = userSnap.data();
-            
-            if (userData.nestId) {
-              // Real-time listener for the NEST document
-              nestUnsubscribe = onSnapshot(doc(db, 'nests', userData.nestId), (nestSnap) => {
-                if (nestSnap.exists()) {
-                  setNestData({ id: nestSnap.id, ...nestSnap.data() });
-                }
-              });
-            } else {
-              setNestData(null);
-            }
-          }
-          
-          // Check PIN
-          const pin = await getStoredPin();
-          setIsLocked(!!pin);
-          setLoading(false);
-        });
-      } else {
+    return onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      if (!firebaseUser) {
+        setUserData(null);
         setNestData(null);
-        setIsLocked(false);
+        setLoading(false);
+      }
+    });
+  }, []);
+
+  // 2. User Document Listener
+  useEffect(() => {
+    if (!user) return;
+
+    const unsub = onSnapshot(doc(db, 'users', user.uid), async (userSnap) => {
+      if (userSnap.exists()) {
+        setUserData(userSnap.data());
+      } else {
+        // Document might not exist yet if just registered
+        setUserData({ email: user.email, nestId: null });
+      }
+      
+      const pin = await getStoredPin();
+      setIsLocked(!!pin);
+      
+      // If no nestId, we can stop the top-level loading
+      if (!userSnap.data()?.nestId) {
         setLoading(false);
       }
     });
 
-    return () => {
-      authUnsubscribe();
-      userUnsubscribe();
-      nestUnsubscribe();
-    };
-  }, []);
+    return unsub;
+  }, [user]);
+
+  // 3. Nest Document Listener
+  useEffect(() => {
+    const nestId = userData?.nestId;
+    if (!nestId) {
+      setNestData(null);
+      return;
+    }
+
+    setLoading(true); // Ensure loading is true while fetching the nest
+    const unsub = onSnapshot(doc(db, 'nests', nestId), (nestSnap) => {
+      if (nestSnap.exists()) {
+        setNestData({ id: nestSnap.id, ...nestSnap.data() });
+      } else {
+        setNestData(null);
+      }
+      setLoading(false);
+    });
+
+    return unsub;
+  }, [userData?.nestId]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, isLocked, setLocked: setIsLocked, nestData, getStoredPin }}>
+    <AuthContext.Provider value={{ user, loading, isLocked, setLocked: setIsLocked, userData, nestData, getStoredPin }}>
       {children}
     </AuthContext.Provider>
   );
